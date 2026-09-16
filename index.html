@@ -3,603 +3,719 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Lịch Làm Việc Ca Xoay - P.H.PHƯỚC</title>
+    <title>P.H.PHƯỚC - Quản Lý Lịch Làm Việc Ca Xoay</title>
     <style>
         :root {
             --primary: #2563eb;
             --primary-dark: #1d4ed8;
             --bg-body: #f1f5f9;
-            --bg-card: #ffffff;
+            --card-bg: #ffffff;
             --text-main: #0f172a;
-            --text-sub: #64748b;
-            --border: #e2e8f0;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
             
-            --ca1-color: #ea580c;
-            --ca1-bg: #fff7ed;
-            --ca2-color: #0284c7;
-            --ca2-bg: #f0f9ff;
-            --ca3-color: #7c3aed;
-            --ca3-bg: #f5f3ff;
-            --nghi-color: #16a34a;
-            --nghi-bg: #f0fdf4;
-            --other-color: #475569;
-            --other-bg: #f8fafc;
+            /* Màu các ca */
+            --ca1-color: #ea580c; /* Ca 1: Cam */
+            --ca2-color: #0284c7; /* Ca 2: Xanh dương */
+            --ca3-color: #7c3aed; /* Ca 3: Tím */
+            --nghi-color: #16a34a; /* Nghỉ: Xanh lá */
+            --ot-color: #db2777;   /* Tăng ca: Hồng */
+            --phep-color: #d97706; /* Nghỉ phép: Vàng hổ phách */
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-body); color: var(--text-main); padding-bottom: 70px; }
+        body { background-color: var(--bg-body); color: var(--text-main); padding-bottom: 75px; user-select: none; }
 
-        /* App Header với Logo P.H.PHƯỚC */
-        .app-header {
-            position: sticky; top: 0; z-index: 100;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: #ffffff; padding: 12px 16px;
-            display: flex; align-items: center; justify-content: space-between;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
+        /* Top Bar & Brand Logo Header */
+        .top-bar { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; padding: 12px 16px; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .brand-container { display: flex; align-items: center; justify-content: space-between; }
         .brand-logo { display: flex; align-items: center; gap: 10px; }
-        .logo-badge {
-            width: 38px; height: 38px; border-radius: 10px;
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: #ffffff; font-weight: 900; font-size: 0.85rem;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
-            letter-spacing: -0.5px; border: 1.5px solid #fef3c7;
-        }
-        .brand-title { font-size: 1.05rem; font-weight: 700; color: #f8fafc; }
-        .brand-subtitle { font-size: 0.68rem; color: #94a3b8; font-weight: 500; }
+        .logo-badge { background: linear-gradient(135deg, #f59e0b, #b45309); color: white; font-weight: 900; font-size: 0.85rem; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; border: 1.5px solid #fef3c7; box-shadow: 0 2px 6px rgba(245, 158, 11, 0.4); }
+        .brand-info h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: 0.3px; color: #f8fafc; }
+        .brand-info p { font-size: 0.7rem; color: #94a3b8; font-weight: 500; }
+        .realtime-badge { background: rgba(37, 99, 235, 0.2); border: 1px solid rgba(59, 130, 246, 0.4); color: #60a5fa; font-size: 0.68rem; padding: 4px 8px; border-radius: 20px; font-weight: 600; }
 
-        /* Navigation Tháng */
-        .month-nav {
-            background: var(--bg-card); padding: 12px 16px;
-            display: flex; align-items: center; justify-content: space-between;
-            border-bottom: 1px solid var(--border);
-        }
+        /* Controls Month Nav */
+        .month-nav { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 12px 16px; border-bottom: 1px solid var(--border-color); }
         .month-nav h2 { font-size: 1.1rem; font-weight: 700; color: var(--text-main); }
-        .btn-icon {
-            background: var(--bg-body); border: 1px solid var(--border);
-            width: 36px; height: 36px; border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.1rem; cursor: pointer; color: var(--text-main);
-        }
+        .btn-icon { background: #f8fafc; border: 1px solid var(--border-color); width: 36px; height: 36px; border-radius: 8px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-main); }
+        .btn-icon:active { background: #e2e8f0; }
 
         /* Legend */
-        .legend-bar {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
-            padding: 10px 16px; background: var(--bg-card); border-bottom: 1px solid var(--border);
-            font-size: 0.72rem; text-align: center;
-        }
-        .legend-item { padding: 4px; border-radius: 6px; font-weight: 600; }
-        .leg-ca1 { color: var(--ca1-color); background: var(--ca1-bg); }
-        .leg-ca2 { color: var(--ca2-color); background: var(--ca2-bg); }
-        .leg-ca3 { color: var(--ca3-color); background: var(--ca3-bg); }
-        .leg-nghi { color: var(--nghi-color); background: var(--nghi-bg); }
+        .legend-bar { display: flex; overflow-x: auto; gap: 8px; padding: 10px 16px; background: #ffffff; border-bottom: 1px solid var(--border-color); font-size: 0.72rem; white-space: nowrap; scrollbar-width: none; }
+        .legend-bar::-webkit-scrollbar { display: none; }
+        .legend-item { display: flex; align-items: center; gap: 4px; background: #f8fafc; padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border-color); }
+        .dot { width: 8px; height: 8px; border-radius: 50%; }
 
-        /* Calendar Grid */
-        .calendar-container { padding: 10px; }
-        .week-days {
-            display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
-            text-align: center; font-size: 0.75rem; font-weight: 700; color: var(--text-sub);
-            margin-bottom: 6px;
-        }
-        .week-days div:first-child, .week-days div:last-child { color: #ef4444; }
+        /* Main View Container */
+        .view-content { padding: 12px; }
 
-        .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
-        .day-card {
-            background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border);
-            min-height: 72px; padding: 4px; display: flex; flex-direction: column;
-            justify-content: space-between; position: relative; cursor: pointer;
-        }
-        .day-card.today { border: 2px solid var(--primary); background: #eff6ff; }
-        .day-card.today .day-num { color: var(--primary); font-weight: 900; }
+        /* Calendar Grid Style */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+        .day-header { text-align: center; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); padding: 6px 0; }
+        .day-cell { background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border-color); min-height: 74px; padding: 5px; display: flex; flex-direction: column; justify-content: space-between; position: relative; cursor: pointer; }
+        .day-cell:active { transform: scale(0.97); transition: transform 0.1s; }
         
-        .day-top { display: flex; justify-content: space-between; align-items: center; }
+        .day-cell.is-today { border: 2px solid var(--primary); background: #eff6ff; }
+        .today-tag { position: absolute; top: 2px; right: 4px; font-size: 0.55rem; background: var(--primary); color: white; padding: 1px 4px; border-radius: 4px; font-weight: 700; }
         .day-num { font-size: 0.85rem; font-weight: 700; color: var(--text-main); }
-        .dot-note { width: 6px; height: 6px; border-radius: 50%; background: #ef4444; }
+        .shift-badge { font-size: 0.65rem; padding: 3px 2px; border-radius: 5px; color: white; text-align: center; font-weight: 600; line-height: 1.1; margin-top: 4px; word-break: break-word; }
+        .has-note-icon { font-size: 0.6rem; color: #ef4444; font-weight: bold; text-align: right; }
 
-        .shift-badge {
-            font-size: 0.65rem; font-weight: 700; padding: 4px 2px;
-            border-radius: 5px; text-align: center; margin-top: 4px; line-height: 1.1;
-        }
-        .badge-ca1 { background: var(--ca1-bg); color: var(--ca1-color); border: 1px solid #ffedd5; }
-        .badge-ca2 { background: var(--ca2-bg); color: var(--ca2-color); border: 1px solid #e0f2fe; }
-        .badge-ca3 { background: var(--ca3-bg); color: var(--ca3-color); border: 1px solid #ede9fe; }
-        .badge-nghi { background: var(--nghi-bg); color: var(--nghi-color); border: 1px solid #dcfce7; }
-        .badge-other { background: var(--other-bg); color: var(--other-color); border: 1px solid #e2e8f0; }
+        /* Shift Color Classes */
+        .bg-ca1 { background-color: var(--ca1-color); }
+        .bg-ca2 { background-color: var(--ca2-color); }
+        .bg-ca3 { background-color: var(--ca3-color); }
+        .bg-nghi { background-color: var(--nghi-color); }
+        .bg-ot { background-color: var(--ot-color); }
+        .bg-phep { background-color: var(--phep-color); }
+        .bg-other { background-color: #64748b; }
+
+        /* List View */
+        .list-item { background: var(--card-bg); padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .list-date { font-weight: 700; font-size: 0.9rem; }
+        .list-note { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+
+        /* Stats Card */
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 12px; }
+        .stat-card { background: var(--card-bg); padding: 14px; border-radius: 12px; border: 1px solid var(--border-color); text-align: center; }
+        .stat-val { font-size: 1.4rem; font-weight: 800; color: var(--primary); margin-top: 4px; }
+        .stat-lbl { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
+
+        /* Anchor List Card */
+        .anchor-card { background: var(--card-bg); padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; }
 
         /* Bottom Sheet Modal */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6);
-            display: none; justify-content: center; align-items: flex-end; z-index: 1000;
-            backdrop-filter: blur(3px);
-        }
-        .modal-overlay.active { display: flex; }
-        .bottom-sheet {
-            background: var(--bg-card); width: 100%; max-width: 500px;
-            border-top-left-radius: 20px; border-top-right-radius: 20px;
-            padding: 20px; max-height: 90vh; overflow-y: auto;
-            animation: slideUp 0.25s ease-out; box-shadow: 0 -10px 25px rgba(0,0,0,0.2);
-        }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 200; display: none; opacity: 0; transition: opacity 0.25s ease; }
+        .modal-overlay.active { display: flex; opacity: 1; align-items: flex-end; }
+        .bottom-sheet { background: var(--card-bg); width: 100%; max-height: 88vh; border-top-left-radius: 20px; border-top-right-radius: 20px; padding: 20px; overflow-y: auto; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1); box-shadow: 0 -10px 25px rgba(0,0,0,0.2); }
+        .modal-overlay.active .bottom-sheet { transform: translateY(0); }
+        .sheet-handle { width: 40px; height: 4px; background: #cbd5e1; border-radius: 2px; margin: 0 auto 16px auto; }
+        .sheet-title { font-size: 1.1rem; font-weight: 700; text-align: center; margin-bottom: 16px; color: var(--text-main); }
 
-        .sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-        .sheet-title { font-size: 1.1rem; font-weight: 700; color: var(--text-main); }
-        
-        .form-group { margin-bottom: 16px; }
-        .form-label { display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-sub); margin-bottom: 6px; text-uppercase: uppercase; }
-        .form-select, .form-textarea {
-            width: 100%; padding: 10px 12px; border: 1px solid var(--border);
-            border-radius: 8px; font-size: 0.9rem; background: #f8fafc; color: var(--text-main);
-        }
-        
-        .action-box {
-            background: #f8fafc; border: 1px solid var(--border); border-radius: 10px;
-            padding: 12px; margin-bottom: 16px;
-        }
-        .btn-stack { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-        .btn {
-            width: 100%; padding: 12px; border: none; border-radius: 8px;
-            font-size: 0.88rem; font-weight: 700; cursor: pointer; text-align: center;
-            display: flex; align-items: center; justify-content: center; gap: 6px;
-        }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-warning { background: #d97706; color: white; }
-        .btn-danger { background: #dc2626; color: white; }
+        /* Modal Tabs */
+        .modal-tab-nav { display: flex; background: #f1f5f9; padding: 3px; border-radius: 10px; margin-bottom: 16px; }
+        .modal-tab-btn { flex: 1; padding: 8px 4px; border: none; background: transparent; font-size: 0.78rem; font-weight: 600; border-radius: 8px; cursor: pointer; color: var(--text-muted); }
+        .modal-tab-btn.active { background: white; color: var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 
-        /* Views */
-        .view-content { display: none; }
-        .view-content.active { display: block; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px; color: var(--text-main); }
+        .form-control { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.9rem; background: #f8fafc; color: var(--text-main); }
+        .form-control:focus { border-color: var(--primary); outline: none; background: white; }
 
-        /* Bottom Navigation Bar */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0; height: 60px;
-            background: var(--bg-card); border-top: 1px solid var(--border);
-            display: flex; justify-content: space-around; align-items: center; z-index: 99;
-        }
-        .nav-tab {
-            display: flex; flex-direction: column; align-items: center;
-            gap: 2px; color: var(--text-sub); font-size: 0.68rem; font-weight: 600;
-            background: none; border: none; width: 25%; height: 100%; justify-content: center; cursor: pointer;
-        }
-        .nav-tab.active { color: var(--primary); font-weight: 700; }
-        .nav-tab-icon { font-size: 1.2rem; }
+        /* Cycle Option Cards */
+        .option-card { border: 1.5px solid var(--border-color); border-radius: 10px; padding: 12px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; background: #f8fafc; }
+        .option-card:has(input:checked) { border-color: var(--primary); background: #eff6ff; }
+        .option-header { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.85rem; color: var(--text-main); margin-bottom: 4px; }
+        .option-desc { font-size: 0.75rem; color: var(--text-muted); line-height: 1.35; padding-left: 24px; }
 
-        .copyright-tag {
-            text-align: center; font-size: 0.7rem; color: var(--text-sub);
-            padding: 15px 0 5px 0; font-weight: 600;
-        }
+        .btn-submit { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 700; cursor: pointer; margin-top: 8px; }
+        .btn-submit:active { background: var(--primary-dark); }
+        .brand-copyright { text-align: center; font-size: 0.7rem; color: var(--text-muted); margin-top: 16px; padding-top: 10px; border-top: 1px dashed var(--border-color); font-weight: 600; }
+
+        /* Bottom Fixed Navbar */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--card-bg); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; padding: 8px 0; z-index: 99; box-shadow: 0 -4px 10px rgba(0,0,0,0.05); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; border: none; background: transparent; color: var(--text-muted); font-size: 0.68rem; font-weight: 600; cursor: pointer; width: 25%; }
+        .nav-item.active { color: var(--primary); }
+        .nav-icon { font-size: 1.2rem; }
+
+        /* Toast notification */
+        .toast { position: fixed; top: 70px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; z-index: 300; opacity: 0; transition: opacity 0.3s; pointer-events: none; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .toast.show { opacity: 1; }
     </style>
 </head>
 <body>
 
-    <header class="app-header">
-        <div class="brand-logo">
-            <div class="logo-badge">PHP</div>
-            <div>
-                <div class="brand-title">LỊCH CA XOAY</div>
-                <div class="brand-subtitle">Bản quyền P.H.PHƯỚC</div>
+    <!-- Header với Logo Thương hiệu P.H.PHƯỚC -->
+    <header class="top-bar">
+        <div class="brand-container">
+            <div class="brand-logo">
+                <div class="logo-badge">PHP</div>
+                <div class="brand-info">
+                    <h1>P.H.PHƯỚC</h1>
+                    <p>Quản Lý Lịch Ca Xoay</p>
+                </div>
             </div>
+            <div class="realtime-badge" id="realtimeBadge">● 2026 Live</div>
         </div>
-        <button class="btn-icon" style="color:#fff; background:rgba(255,255,255,0.1); border:none;" onclick="jumpToToday()">📍</button>
     </header>
 
+    <!-- Điều Hướng Tháng -->
     <div class="month-nav">
         <button class="btn-icon" onclick="changeMonth(-1)">❮</button>
-        <h2 id="monthDisplay">Tháng 09/2026</h2>
+        <h2 id="monthYearDisplay">Tháng 09 / 2026</h2>
         <button class="btn-icon" onclick="changeMonth(1)">❯</button>
     </div>
 
+    <!-- Thanh Chú Thích Ca -->
     <div class="legend-bar">
-        <div class="legend-item leg-ca1">Ca 1 (07-15h)</div>
-        <div class="legend-item leg-ca2">Ca 2 (15-23h)</div>
-        <div class="legend-item leg-ca3">Ca 3 (23-07h)</div>
-        <div class="legend-item leg-nghi">Nghỉ</div>
+        <div class="legend-item"><span class="dot bg-ca1"></span> Ca 1 (07h-15h)</div>
+        <div class="legend-item"><span class="dot bg-ca2"></span> Ca 2 (15h-23h)</div>
+        <div class="legend-item"><span class="dot bg-ca3"></span> Ca 3 (23h-07h)</div>
+        <div class="legend-item"><span class="dot bg-nghi"></span> Nghỉ</div>
+        <div class="legend-item"><span class="dot bg-ot"></span> Tăng Ca</div>
+        <div class="legend-item"><span class="dot bg-phep"></span> Nghỉ Phép</div>
     </div>
 
-    <!-- VIEW 1: LỊCH LƯỚI -->
-    <main id="viewCalendar" class="view-content active">
-        <div class="calendar-container">
-            <div class="week-days">
-                <div>CN</div><div>T2</div><div>T3</div><div>T4</div><div>T5</div><div>T6</div><div>T7</div>
+    <!-- Nội dung Tabs -->
+    <main class="view-content">
+        <!-- Tab 1: Lịch Lưới -->
+        <div id="tabCalendar" class="tab-pane">
+            <div class="calendar-grid" id="calendarGrid"></div>
+        </div>
+
+        <!-- Tab 2: Danh Sách -->
+        <div id="tabList" class="tab-pane" style="display: none;">
+            <div id="listViewContainer"></div>
+        </div>
+
+        <!-- Tab 3: Ghi Chú -->
+        <div id="tabNotes" class="tab-pane" style="display: none;">
+            <div id="notesViewContainer"></div>
+        </div>
+
+        <!-- Tab 4: Thống Kê & Mốc Chu Kỳ -->
+        <div id="tabStats" class="tab-pane" style="display: none;">
+            <h3 style="font-size: 0.95rem; margin-bottom: 10px; font-weight: 700;">Thống kê tháng hiện tại</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-lbl">Tổng ca làm việc</div>
+                    <div class="stat-val" id="statTotalShifts">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-lbl">Tổng giờ làm</div>
+                    <div class="stat-val" id="statTotalHours">0h</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-lbl">Số ngày nghỉ</div>
+                    <div class="stat-val" id="statOffDays" style="color: var(--nghi-color);">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-lbl">Số ca Tăng Ca / Phép</div>
+                    <div class="stat-val" id="statOtDays" style="color: var(--ot-color);">0</div>
+                </div>
             </div>
-            <div class="days-grid" id="daysGrid"></div>
+
+            <h3 style="font-size: 0.95rem; margin: 16px 0 10px 0; font-weight: 700;">Danh sách Mốc Chu Kỳ Xoay Ca</h3>
+            <div id="anchorListContainer"></div>
+            <button class="btn-submit" style="background: #ef4444; margin-top: 12px;" onclick="resetAllAnchors()">⚠️ Xóa tất cả mốc & Đặt lại mặc định</button>
         </div>
     </main>
 
-    <!-- VIEW 2: DANH SÁCH -->
-    <main id="viewList" class="view-content" style="padding: 15px;">
-        <h3 style="margin-bottom: 12px; font-size: 1rem;">Lịch Chi Tiết Trong Tháng</h3>
-        <div id="listViewContent"></div>
-    </main>
-
-    <!-- VIEW 3: GHI CHÚ -->
-    <main id="viewNotes" class="view-content" style="padding: 15px;">
-        <h3 style="margin-bottom: 12px; font-size: 1rem;">Danh Sách Ghi Chú</h3>
-        <div id="notesViewContent"></div>
-    </main>
-
-    <!-- VIEW 4: THỐNG KÊ & MỐC CHU KỲ -->
-    <main id="viewStats" class="view-content" style="padding: 15px;">
-        <h3 style="margin-bottom: 12px; font-size: 1rem;">Thống Kê Tháng Này</h3>
-        <div id="statsContent" style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid var(--border);"></div>
-        
-        <h3 style="margin-bottom: 12px; font-size: 1rem;">Các Mốc Chu Kỳ Làm Việc</h3>
-        <div id="anchorsListContent"></div>
-    </main>
-
-    <div class="copyright-tag">Ứng dụng thuộc bản quyền P.H.PHƯỚC © 2026</div>
-
-    <!-- BOTTOM SHEET EDIT MODAL -->
-    <div class="modal-overlay" id="editModal">
-        <div class="bottom-sheet">
-            <div class="sheet-header">
-                <div>
-                    <div class="sheet-title" id="modalDateTitle">Ngày 19/09/2026</div>
-                    <div style="font-size: 0.75rem; color: var(--text-sub);">Chủ sở hữu: P.H.PHƯỚC</div>
-                </div>
-                <button class="btn-icon" onclick="closeModal()">✕</button>
-            </div>
-
-            <!-- Chỉnh sửa riêng lẻ ngày đó -->
-            <div class="form-group">
-                <label class="form-label">1. Đổi ca lẻ / Trực thay ngày này:</label>
-                <select class="form-select" id="singleShiftSelect">
-                    <option value="AUTO">-- Theo chu kỳ xoay --</option>
-                    <option value="Ca 1 (07h-15h)">Ca 1 (07:00 - 15:00)</option>
-                    <option value="Ca 2 (15h-23h)">Ca 2 (15:00 - 23:00)</option>
-                    <option value="Ca 3 (23h-07h)">Ca 3 (23:00 - 07:00)</option>
-                    <option value="Nghỉ">Nghỉ</option>
-                    <option value="Tăng Ca">Tăng Ca</option>
-                    <option value="Nghỉ Phép">Nghỉ Phép</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Ghi chú công việc:</label>
-                <textarea class="form-textarea" id="noteInput" rows="2" placeholder="Nhập ghi chú..."></textarea>
-            </div>
-
-            <button class="btn btn-primary" onclick="saveSingleDay()" style="margin-bottom: 15px;">💾 Lưu Riêng Ngày Này</button>
-
-            <!-- Tùy chọn Thay đổi Chu kỳ -->
-            <div class="action-box">
-                <label class="form-label" style="color: #d97706;">2. ĐIỀU CHUYỂN / THAY ĐỔI CHU KỲ XOAY:</label>
-                <p style="font-size: 0.75rem; color: var(--text-sub); margin-bottom: 8px;">Chọn ca bắt đầu cho ngày này:</p>
-                <select class="form-select" id="cycleShiftSelect" style="margin-bottom: 10px;">
-                    <option value="0">Ca 1 - Ngày 1</option>
-                    <option value="1">Ca 1 - Ngày 2</option>
-                    <option value="2">Ca 2 - Ngày 1</option>
-                    <option value="3">Ca 2 - Ngày 2</option>
-                    <option value="4">Ca 3 - Ngày 1</option>
-                    <option value="5">Ca 3 - Ngày 2</option>
-                    <option value="6">Nghỉ - Ngày 1</option>
-                    <option value="7">Nghỉ - Ngày 2</option>
-                </select>
-
-                <div class="btn-stack">
-                    <button class="btn btn-warning" onclick="applyCycleChange('ALL')">
-                        🔄 1. Thay đổi TOÀN BỘ lịch (Trước & Sau)
-                    </button>
-                    <button class="btn btn-primary" onclick="applyCycleChange('FUTURE')">
-                        ⏩ 2. Chỉ thay đổi TỪ NGÀY NÀY TRỞ ĐI
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bottom Navigation Bar -->
+    <!-- Bottom Navigation Bar Mobile -->
     <nav class="bottom-nav">
-        <button class="nav-tab active" onclick="switchView('viewCalendar', this)">
-            <span class="nav-tab-icon">📅</span>Lịch
+        <button class="nav-item active" onclick="switchTab('tabCalendar', this)">
+            <span class="nav-icon">📅</span>
+            <span>Lịch Lưới</span>
         </button>
-        <button class="nav-tab" onclick="switchView('viewList', this)">
-            <span class="nav-tab-icon">📋</span>Danh sách
+        <button class="nav-item" onclick="switchTab('tabList', this)">
+            <span class="nav-icon">📋</span>
+            <span>Danh Sách</span>
         </button>
-        <button class="nav-tab" onclick="switchView('viewNotes', this)">
-            <span class="nav-tab-icon">📝</span>Ghi chú
+        <button class="nav-item" onclick="switchTab('tabNotes', this)">
+            <span class="nav-icon">📝</span>
+            <span>Ghi Chú</span>
         </button>
-        <button class="nav-tab" onclick="switchView('viewStats', this)">
-            <span class="nav-tab-icon">📊</span>Thống kê
+        <button class="nav-item" onclick="switchTab('tabStats', this)">
+            <span class="nav-icon">📊</span>
+            <span>Thống Kê</span>
         </button>
     </nav>
 
-<script>
-    const PATTERN = [
-        { name: "Ca 1 (07h-15h)", code: "CA1", class: "badge-ca1" },
-        { name: "Ca 1 (07h-15h)", code: "CA1", class: "badge-ca1" },
-        { name: "Ca 2 (15h-23h)", code: "CA2", class: "badge-ca2" },
-        { name: "Ca 2 (15h-23h)", code: "CA2", class: "badge-ca2" },
-        { name: "Ca 3 (23h-07h)", code: "CA3", class: "badge-ca3" },
-        { name: "Ca 3 (23h-07h)", code: "CA3", class: "badge-ca3" },
-        { name: "Nghỉ", code: "NGHI", class: "badge-nghi" },
-        { name: "Nghỉ", code: "NGHI", class: "badge-nghi" }
-    ];
+    <!-- Bottom Sheet Modal Chỉnh Sửa Ngày -->
+    <div class="modal-overlay" id="editModal" onclick="closeModalOnOverlay(event)">
+        <div class="bottom-sheet">
+            <div class="sheet-handle"></div>
+            <div class="sheet-title" id="modalTitle">Ngày 19/09/2026</div>
 
-    let currentDate = new Date();
-    let selectedDateStr = "";
+            <div class="modal-tab-nav">
+                <button class="modal-tab-btn active" onclick="switchModalMode('single', this)">1. Chỉnh sửa ngày này</button>
+                <button class="modal-tab-btn" onclick="switchModalMode('cycle', this)">2. Đổi Mốc Chu Kỳ</button>
+            </div>
 
-    function getAnchors() {
-        const saved = localStorage.getItem('php_shift_anchors');
-        if (saved) return JSON.parse(saved);
-        // Tự động lấy mốc mặc định ban đầu
-        return [{ date: '2026-09-19', patternIndex: 0 }];
-    }
+            <!-- Chế độ 1: Chỉnh sửa riêng 1 ngày -->
+            <div id="modeSingle">
+                <div class="form-group">
+                    <label>Chọn Ca / Trạng Thái:</label>
+                    <select class="form-control" id="modalSingleShiftSelect">
+                        <option value="AUTO">-- Tự động theo chu kỳ --</option>
+                        <option value="Ca 1 (07h-15h)">Ca 1 (07:00 - 15:00)</option>
+                        <option value="Ca 2 (15h-23h)">Ca 2 (15:00 - 23:00)</option>
+                        <option value="Ca 3 (23h-07h)">Ca 3 (23:00 - 07:00)</option>
+                        <option value="Nghỉ">Nghỉ</option>
+                        <option value="Tăng Ca">Tăng Ca (OT)</option>
+                        <option value="Nghỉ Phép">Nghỉ Phép</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Ghi chú công việc:</label>
+                    <textarea class="form-control" id="modalSingleNote" rows="3" placeholder="Nhập ghi chú cá nhân..."></textarea>
+                </div>
+                <button class="btn-submit" onclick="saveSingleDay()">💾 Lưu Ngày Này</button>
+            </div>
 
-    function saveAnchors(anchors) {
-        anchors.sort((a, b) => a.date.localeCompare(b.date));
-        localStorage.setItem('php_shift_anchors', JSON.stringify(anchors));
-    }
+            <!-- Chế độ 2: Đổi mốc chu kỳ với 02 lựa chọn rõ ràng -->
+            <div id="modeCycle" style="display: none;">
+                <div class="form-group">
+                    <label>Ca làm việc bắt đầu tại ngày này:</label>
+                    <select class="form-control" id="modalCycleShiftIndex">
+                        <option value="0">Ca 1 — Ngày 1 (07h-15h)</option>
+                        <option value="1">Ca 1 — Ngày 2 (07h-15h)</option>
+                        <option value="2">Ca 2 — Ngày 1 (15h-23h)</option>
+                        <option value="3">Ca 2 — Ngày 2 (15h-23h)</option>
+                        <option value="4">Ca 3 — Ngày 1 (23h-07h)</option>
+                        <option value="5">Ca 3 — Ngày 2 (23h-07h)</option>
+                        <option value="6">Nghỉ — Ngày 1</option>
+                        <option value="7">Nghỉ — Ngày 2</option>
+                    </select>
+                </div>
 
-    function getCustomOverrides() {
-        return JSON.parse(localStorage.getItem('php_shift_custom') || '{}');
-    }
+                <div class="form-group">
+                    <label>Chọn phạm vi áp dụng mốc mới:</label>
 
-    function saveCustomOverrides(data) {
-        localStorage.setItem('php_shift_custom', JSON.stringify(data));
-    }
+                    <label class="option-card">
+                        <div class="option-header">
+                            <input type="radio" name="cycleApplyMode" value="all" checked>
+                            <span>Lựa chọn 1: TOÀN BỘ lịch (Trước & Sau)</span>
+                        </div>
+                        <div class="option-desc">
+                            Đặt ngày này làm <b>Mốc Gốc Duy Nhất</b>. Xóa bỏ tất cả các mốc cũ để trải lại chu kỳ xoay ca mới cho toàn bộ thời gian.
+                        </div>
+                    </label>
 
-    function formatDateKey(d) {
-        const y = d.getFullYear();
-        const m = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        return `${y}-${m}-${day}`;
-    }
+                    <label class="option-card">
+                        <div class="option-header">
+                            <input type="radio" name="cycleApplyMode" value="from_now">
+                            <span>Lựa chọn 2: TỪ NGÀY NÀY TRỞ ĐI</span>
+                        </div>
+                        <div class="option-desc">
+                            Tạo mốc xoay ca mới bắt đầu từ ngày được chọn. <b>Giữ nguyên 100% lịch sử xoay ca trong quá khứ</b> trước ngày này.
+                        </div>
+                    </label>
+                </div>
 
-    function calculateShiftForDate(dateObj) {
-        const dateStr = formatDateKey(dateObj);
-        const custom = getCustomOverrides();
+                <button class="btn-submit" style="background: #16a34a;" onclick="saveCycleAnchor()">🔄 Cập Nhật Mốc Chu Kỳ</button>
+            </div>
 
-        if (custom[dateStr] && custom[dateStr].shift && custom[dateStr].shift !== 'AUTO') {
-            const s = custom[dateStr].shift;
-            let cssClass = "badge-other";
-            if (s.includes("Ca 1")) cssClass = "badge-ca1";
-            else if (s.includes("Ca 2")) cssClass = "badge-ca2";
-            else if (s.includes("Ca 3")) cssClass = "badge-ca3";
-            else if (s === "Nghỉ") cssClass = "badge-nghi";
-            return { name: s, class: cssClass, isCustom: true };
+            <div class="brand-copyright">
+                Tác giả & Sở hữu bản quyền: <b>P.H.PHƯỚC © 2026</b>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thông báo Toast -->
+    <div class="toast" id="toast">Đã cập nhật dữ liệu thành công!</div>
+
+    <script>
+        // Mẫu 8 ngày làm việc ca xoay cố định
+        const SHIFT_PATTERN = [
+            { name: "Ca 1 (07h-15h)", code: "CA1", class: "bg-ca1", short: "Ca 1", hours: 8 },
+            { name: "Ca 1 (07h-15h)", code: "CA1", class: "bg-ca1", short: "Ca 1", hours: 8 },
+            { name: "Ca 2 (15h-23h)", code: "CA2", class: "bg-ca2", short: "Ca 2", hours: 8 },
+            { name: "Ca 2 (15h-23h)", code: "CA2", class: "bg-ca2", short: "Ca 2", hours: 8 },
+            { name: "Ca 3 (23h-07h)", code: "CA3", class: "bg-ca3", short: "Ca 3", hours: 8 },
+            { name: "Ca 3 (23h-07h)", code: "CA3", class: "bg-ca3", short: "Ca 3", hours: 8 },
+            { name: "Nghỉ",           code: "NGHI",class: "bg-nghi",short: "Nghỉ", hours: 0 },
+            { name: "Nghỉ",           code: "NGHI",class: "bg-nghi",short: "Nghỉ", hours: 0 }
+        ];
+
+        // Biến trạng thái toàn cục
+        let currentDate = new Date(); // Mặc định tự nhảy ngày theo thời gian thực
+        let selectedDateStr = "";
+        let currentActiveTab = "tabCalendar";
+
+        // Khởi tạo app
+        window.onload = function() {
+            renderCurrentTab();
+            updateRealtimeBadge();
+        };
+
+        function updateRealtimeBadge() {
+            const today = new Date();
+            const dateDisplay = `${String(today.getDate()).padStart(2,'0')}/${String(today.getMonth()+1).padStart(2,'0')}/${today.getFullYear()}`;
+            document.getElementById('realtimeBadge').innerText = `● Hôm nay: ${dateDisplay}`;
         }
 
-        const anchors = getAnchors();
-        let activeAnchor = anchors[0];
-        for (let i = 0; i < anchors.length; i++) {
-            if (anchors[i].date <= dateStr) {
-                activeAnchor = anchors[i];
-            } else {
-                break;
+        // --- HỆ THỐNG MỐC CHU KỲ (DYNAMIC MULTI-ANCHORS) ---
+
+        function getAnchors() {
+            const saved = localStorage.getItem('shift_anchors_v2');
+            if (saved) {
+                try {
+                    let list = JSON.parse(saved);
+                    if (Array.isArray(list) && list.length > 0) {
+                        return list.sort((a,b) => a.date.localeCompare(b.date));
+                    }
+                } catch(e){}
+            }
+            // Mốc mặc định ban đầu: Ngày 19/09/2026 = Ca 1 (index 0)
+            return [{ date: '2026-09-19', shiftIndex: 0 }];
+        }
+
+        function saveAnchors(anchors) {
+            anchors.sort((a,b) => a.date.localeCompare(b.date));
+            localStorage.setItem('shift_anchors_v2', JSON.stringify(anchors));
+        }
+
+        function getCustomData() {
+            return JSON.parse(localStorage.getItem('shift_custom_data_v2') || '{}');
+        }
+
+        function saveCustomData(data) {
+            localStorage.setItem('shift_custom_data_v2', JSON.stringify(data));
+        }
+
+        // Tính ca trực chuẩn xác cho 1 ngày bất kỳ
+        function getShiftForDate(dateObj) {
+            const dateStr = formatDateKey(dateObj);
+            const customData = getCustomData();
+
+            // 1. Kiểm tra ngày chỉnh sửa riêng lẻ
+            if (customData[dateStr] && customData[dateStr].shift && customData[dateStr].shift !== 'AUTO') {
+                const s = customData[dateStr].shift;
+                let cssClass = "bg-other";
+                let hours = 8;
+                if (s.includes("Ca 1")) cssClass = "bg-ca1";
+                else if (s.includes("Ca 2")) cssClass = "bg-ca2";
+                else if (s.includes("Ca 3")) cssClass = "bg-ca3";
+                else if (s === "Nghỉ") { cssClass = "bg-nghi"; hours = 0; }
+                else if (s.includes("Tăng Ca")) cssClass = "bg-ot";
+                else if (s.includes("Phép")) { cssClass = "bg-phep"; hours = 0; }
+                return { name: s, short: s, class: cssClass, hours: hours, custom: true };
+            }
+
+            // 2. Tính ca dựa trên mốc chu kỳ phù hợp
+            const anchors = getAnchors();
+            let activeAnchor = null;
+
+            // Tìm mốc có ngày <= ngày cần tính
+            for (let i = anchors.length - 1; i >= 0; i--) {
+                if (anchors[i].date <= dateStr) {
+                    activeAnchor = anchors[i];
+                    break;
+                }
+            }
+
+            // Nếu ngày cần tính nhỏ hơn mốc đầu tiên, lấy mốc đầu tiên để lùi chu kỳ
+            if (!activeAnchor) {
+                activeAnchor = anchors[0];
+            }
+
+            const anchorDate = parseDateKey(activeAnchor.date);
+            const targetDatePure = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+            
+            const diffDays = Math.round((targetDatePure - anchorDate) / (1000 * 60 * 60 * 24));
+            const cycleIndex = (((activeAnchor.shiftIndex + diffDays) % 8) + 8) % 8;
+
+            return { ...SHIFT_PATTERN[cycleIndex], custom: false };
+        }
+
+        // --- ĐIỀU HƯỚNG VÀ RENDER GIAO DIỆN ---
+
+        function formatDateKey(d) {
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${day}`;
+        }
+
+        function parseDateKey(str) {
+            const parts = str.split('-');
+            return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+        }
+
+        function changeMonth(delta) {
+            currentDate.setMonth(currentDate.getMonth() + delta);
+            renderCurrentTab();
+        }
+
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-pane').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabId).style.display = 'block';
+            btn.classList.add('active');
+            currentActiveTab = tabId;
+            renderCurrentTab();
+        }
+
+        function renderCurrentTab() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            document.getElementById('monthYearDisplay').innerText = `Tháng ${String(month + 1).padStart(2, '0')} / ${year}`;
+
+            if (currentActiveTab === 'tabCalendar') renderCalendar();
+            else if (currentActiveTab === 'tabList') renderListView();
+            else if (currentActiveTab === 'tabNotes') renderNotesView();
+            else if (currentActiveTab === 'tabStats') renderStatsView();
+        }
+
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = '';
+
+            const daysHeader = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+            daysHeader.forEach(d => {
+                const h = document.createElement('div');
+                h.className = 'day-header';
+                h.innerText = d;
+                grid.appendChild(h);
+            });
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const todayStr = formatDateKey(new Date());
+            const customData = getCustomData();
+
+            for (let i = 0; i < firstDay; i++) {
+                grid.appendChild(document.createElement('div'));
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateObj = new Date(year, month, day);
+                const dateStr = formatDateKey(dateObj);
+                const shift = getShiftForDate(dateObj);
+                const dayNote = customData[dateStr]?.note || "";
+
+                const cell = document.createElement('div');
+                cell.className = 'day-cell';
+                if (dateStr === todayStr) cell.classList.add('is-today');
+
+                cell.onclick = () => openModal(dateStr, shift.name, dayNote);
+
+                let cellHtml = `<div class="day-num">${day}</div>`;
+                if (dateStr === todayStr) {
+                    cellHtml += `<div class="today-tag">Hôm nay</div>`;
+                }
+                cellHtml += `<div class="shift-badge ${shift.class}">${shift.short}</div>`;
+
+                if (dayNote) {
+                    cellHtml += `<div class="has-note-icon">● Ghi chú</div>`;
+                }
+
+                cell.innerHTML = cellHtml;
+                grid.appendChild(cell);
             }
         }
 
-        const anchorDate = new Date(activeAnchor.date + "T00:00:00");
-        const targetDate = new Date(dateStr + "T00:00:00");
-        const diffDays = Math.round((targetDate - anchorDate) / (1000 * 60 * 60 * 24));
-        
-        let idx = (activeAnchor.patternIndex + diffDays) % 8;
-        if (idx < 0) idx = (idx + 8) % 8;
+        function renderListView() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const container = document.getElementById('listViewContainer');
+            const customData = getCustomData();
+            container.innerHTML = '';
 
-        return { ...PATTERN[idx], isCustom: false };
-    }
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateObj = new Date(year, month, day);
+                const dateStr = formatDateKey(dateObj);
+                const shift = getShiftForDate(dateObj);
+                const note = customData[dateStr]?.note || "";
 
-    function renderCalendar() {
-        const year = currentDate.getFullYear();
-        const month = currentDate.getMonth();
-
-        document.getElementById('monthDisplay').innerText = `Tháng ${String(month + 1).padStart(2, '0')}/${year}`;
-        const grid = document.getElementById('daysGrid');
-        grid.innerHTML = '';
-
-        const firstDay = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        const todayStr = formatDateKey(new Date());
-
-        for (let i = 0; i < firstDay; i++) {
-            grid.appendChild(document.createElement('div'));
-        }
-
-        const custom = getCustomOverrides();
-
-        for (let d = 1; d <= daysInMonth; d++) {
-            const dateObj = new Date(year, month, d);
-            const dateStr = formatDateKey(dateObj);
-            const shift = calculateShiftForDate(dateObj);
-            const note = custom[dateStr]?.note || "";
-
-            const card = document.createElement('div');
-            card.className = `day-card ${dateStr === todayStr ? 'today' : ''}`;
-            card.onclick = () => openModal(dateStr, shift.name, note);
-
-            const top = document.createElement('div');
-            top.className = 'day-top';
-            top.innerHTML = `<span class="day-num">${d}</span>${note ? '<span class="dot-note"></span>' : ''}`;
-
-            const badge = document.createElement('div');
-            badge.className = `shift-badge ${shift.class}`;
-            badge.innerText = shift.name.split(' ')[0] + (shift.name.includes('(') ? ' ' + shift.name.split(' ')[1] : '');
-
-            card.appendChild(top);
-            card.appendChild(badge);
-            grid.appendChild(card);
-        }
-
-        renderListView();
-        renderNotesView();
-        renderStatsView();
-    }
-
-    function changeMonth(delta) {
-        currentDate.setMonth(currentDate.getMonth() + delta);
-        renderCalendar();
-    }
-
-    function jumpToToday() {
-        currentDate = new Date();
-        renderCalendar();
-    }
-
-    function openModal(dateStr, currentShiftName, note) {
-        selectedDateStr = dateStr;
-        document.getElementById('modalDateTitle').innerText = `Ngày ${dateStr.split('-').reverse().join('/')}`;
-        const custom = getCustomOverrides();
-
-        document.getElementById('singleShiftSelect').value = custom[dateStr]?.shift || "AUTO";
-        document.getElementById('noteInput').value = note;
-        document.getElementById('editModal').classList.add('active');
-    }
-
-    function closeModal() {
-        document.getElementById('editModal').classList.remove('active');
-    }
-
-    function saveSingleDay() {
-        const custom = getCustomOverrides();
-        const shiftVal = document.getElementById('singleShiftSelect').value;
-        const noteVal = document.getElementById('noteInput').value.trim();
-
-        if (shiftVal === 'AUTO' && !noteVal) {
-            delete custom[selectedDateStr];
-        } else {
-            custom[selectedDateStr] = { shift: shiftVal, note: noteVal };
-        }
-
-        saveCustomOverrides(custom);
-        closeModal();
-        renderCalendar();
-    }
-
-    function applyCycleChange(mode) {
-        const patternIdx = parseInt(document.getElementById('cycleShiftSelect').value);
-        let anchors = getAnchors();
-
-        if (mode === 'ALL') {
-            if (confirm(`Đặt lại TOÀN BỘ lịch (Trước & Sau ngày ${selectedDateStr}) theo chu kỳ mới?`)) {
-                anchors = [{ date: selectedDateStr, patternIndex: patternIdx }];
-            } else return;
-        } else if (mode === 'FUTURE') {
-            if (confirm(`Áp dụng chu kỳ mới TỪ NGÀY ${selectedDateStr} TRỞ ĐI? Lịch trong quá khứ được giữ nguyên.`)) {
-                anchors = anchors.filter(a => a.date < selectedDateStr);
-                anchors.push({ date: selectedDateStr, patternIndex: patternIdx });
-            } else return;
-        }
-
-        saveAnchors(anchors);
-        closeModal();
-        renderCalendar();
-    }
-
-    function renderListView() {
-        const container = document.getElementById('listViewContent');
-        container.innerHTML = '';
-        const year = currentDate.getFullYear();
-        const month = currentDate.getMonth();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        const custom = getCustomOverrides();
-
-        for (let d = 1; d <= daysInMonth; d++) {
-            const dateObj = new Date(year, month, d);
-            const dateStr = formatDateKey(dateObj);
-            const shift = calculateShiftForDate(dateObj);
-            const note = custom[dateStr]?.note || "";
-
-            const item = document.createElement('div');
-            item.style.cssText = "background: white; padding: 10px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border);";
-            item.innerHTML = `
-                <div>
-                    <strong>${d}/${month + 1}/${year}</strong> 
-                    <div style="font-size: 0.8rem; color: var(--text-sub);">${note ? '📝 ' + note : ''}</div>
-                </div>
-                <span class="shift-badge ${shift.class}">${shift.name}</span>
-            `;
-            container.appendChild(item);
-        }
-    }
-
-    function renderNotesView() {
-        const container = document.getElementById('notesViewContent');
-        container.innerHTML = '';
-        const custom = getCustomOverrides();
-        let hasNote = false;
-
-        Object.keys(custom).sort().forEach(dateStr => {
-            if (custom[dateStr].note) {
-                hasNote = true;
                 const item = document.createElement('div');
-                item.style.cssText = "background: white; padding: 12px; border-radius: 8px; margin-bottom: 8px; border: 1px solid var(--border);";
+                item.className = 'list-item';
+                item.onclick = () => openModal(dateStr, shift.name, note);
+
                 item.innerHTML = `
-                    <div style="font-weight: 700; color: var(--primary); margin-bottom: 4px;">📅 Ngày ${dateStr.split('-').reverse().join('/')}</div>
-                    <div style="font-size: 0.9rem; color: var(--text-main);">${custom[dateStr].note}</div>
+                    <div>
+                        <div class="list-date">Ngày ${day}/${month + 1}/${year} (${getWeekdayName(dateObj)})</div>
+                        ${note ? `<div class="list-note">📝 ${note}</div>` : ''}
+                    </div>
+                    <div class="shift-badge ${shift.class}" style="padding: 6px 10px; font-size: 0.75rem;">${shift.name}</div>
                 `;
                 container.appendChild(item);
             }
-        });
-
-        if (!hasNote) {
-            container.innerHTML = '<div style="text-align: center; color: var(--text-sub); padding: 20px;">Chưa có ghi chú nào.</div>';
-        }
-    }
-
-    function renderStatsView() {
-        const year = currentDate.getFullYear();
-        const month = currentDate.getMonth();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-        let countCa1 = 0, countCa2 = 0, countCa3 = 0, countNghi = 0;
-
-        for (let d = 1; d <= daysInMonth; d++) {
-            const dateObj = new Date(year, month, d);
-            const shift = calculateShiftForDate(dateObj);
-            if (shift.name.includes("Ca 1")) countCa1++;
-            else if (shift.name.includes("Ca 2")) countCa2++;
-            else if (shift.name.includes("Ca 3")) countCa3++;
-            else if (shift.name.includes("Nghỉ")) countNghi++;
         }
 
-        document.getElementById('statsContent').innerHTML = `
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; font-size: 0.85rem;">
-                <div>🟠 <b>Ca 1:</b> ${countCa1} ca (${countCa1 * 8}h)</div>
-                <div>🔵 <b>Ca 2:</b> ${countCa2} ca (${countCa2 * 8}h)</div>
-                <div>🟣 <b>Ca 3:</b> ${countCa3} ca (${countCa3 * 8}h)</div>
-                <div>🟢 <b>Ngày Nghỉ:</b> ${countNghi} ngày</div>
-            </div>
-            <hr style="margin: 10px 0; border: none; border-top: 1px solid var(--border);" />
-            <div><b>Tổng số giờ làm tháng ${month + 1}:</b> ${ (countCa1 + countCa2 + countCa3) * 8 } Giờ</div>
-        `;
+        function renderNotesView() {
+            const container = document.getElementById('notesViewContainer');
+            const customData = getCustomData();
+            container.innerHTML = '';
 
-        const anchors = getAnchors();
-        const anchorsContainer = document.getElementById('anchorsListContent');
-        anchorsContainer.innerHTML = '';
+            const keysWithNotes = Object.keys(customData).filter(k => customData[k].note && customData[k].note.trim() !== "").sort().reverse();
 
-        anchors.forEach((anc, idx) => {
-            const item = document.createElement('div');
-            item.style.cssText = "background: white; padding: 10px 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border);";
-            item.innerHTML = `
-                <div>
-                    <b>Mốc ${idx + 1}:</b> Ngày ${anc.date.split('-').reverse().join('/')}
-                    <div style="font-size: 0.75rem; color: var(--text-sub);">Ca bắt đầu: ${PATTERN[anc.patternIndex].name}</div>
-                </div>
-                ${anchors.length > 1 ? `<button class="btn btn-danger" style="width:auto; padding: 5px 10px; font-size: 0.75rem;" onclick="deleteAnchor(${idx})">Xóa</button>` : '<span style="font-size: 0.7rem; color: var(--text-sub);">Mốc gốc</span>'}
-            `;
-            anchorsContainer.appendChild(item);
-        });
-    }
+            if (keysWithNotes.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding: 30px; color: var(--text-muted); font-size: 0.85rem;">Chưa có ghi chú nào được nhập.</div>`;
+                return;
+            }
 
-    function deleteAnchor(idx) {
-        let anchors = getAnchors();
-        if (anchors.length > 1) {
-            anchors.splice(idx, 1);
+            keysWithNotes.forEach(dateStr => {
+                const dateObj = parseDateKey(dateStr);
+                const shift = getShiftForDate(dateObj);
+                const note = customData[dateStr].note;
+
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                item.onclick = () => openModal(dateStr, shift.name, note);
+
+                item.innerHTML = `
+                    <div>
+                        <div class="list-date">Ngày ${formatDateDisplay(dateStr)}</div>
+                        <div class="list-note" style="color: var(--text-main); font-weight: 500; margin-top: 4px;">📝 ${note}</div>
+                    </div>
+                    <div class="shift-badge ${shift.class}" style="padding: 5px 8px;">${shift.short}</div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function renderStatsView() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            let totalShifts = 0;
+            let totalHours = 0;
+            let totalOff = 0;
+            let totalOt = 0;
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateObj = new Date(year, month, day);
+                const shift = getShiftForDate(dateObj);
+
+                if (shift.hours > 0) {
+                    totalShifts++;
+                    totalHours += shift.hours;
+                }
+                if (shift.name.includes("Nghỉ") && !shift.name.includes("Phép")) totalOff++;
+                if (shift.name.includes("Tăng Ca") || shift.name.includes("Phép")) totalOt++;
+            }
+
+            document.getElementById('statTotalShifts').innerText = totalShifts;
+            document.getElementById('statTotalHours').innerText = `${totalHours}h`;
+            document.getElementById('statOffDays').innerText = totalOff;
+            document.getElementById('statOtDays').innerText = totalOt;
+
+            // Render danh sách mốc
+            const anchors = getAnchors();
+            const container = document.getElementById('anchorListContainer');
+            container.innerHTML = '';
+
+            anchors.forEach((anc, idx) => {
+                const item = document.createElement('div');
+                item.className = 'anchor-card';
+                item.innerHTML = `
+                    <div>
+                        <b>Mốc ${idx + 1}: Ngày ${formatDateDisplay(anc.date)}</b>
+                        <div style="color: var(--text-muted); font-size: 0.75rem;">Bắt đầu: ${SHIFT_PATTERN[anc.shiftIndex].name}</div>
+                    </div>
+                    ${anchors.length > 1 ? `<button style="background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; cursor: pointer;" onclick="deleteAnchor('${anc.date}')">Xóa</button>` : '<span style="font-size: 0.7rem; color: var(--primary); font-weight: bold;">Mốc gốc</span>'}
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // --- HÀNH ĐỘNG MODAL VÀ LƯU DỮ LIỆU ---
+
+        function openModal(dateStr, currentShiftName, note) {
+            selectedDateStr = dateStr;
+            document.getElementById('modalTitle').innerText = `Ngày ${formatDateDisplay(dateStr)}`;
+            
+            const customData = getCustomData();
+            document.getElementById('modalSingleShiftSelect').value = customData[dateStr]?.shift || "AUTO";
+            document.getElementById('modalSingleNote').value = note || "";
+
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        function closeModalOnOverlay(e) {
+            if (e.target.id === 'editModal') {
+                document.getElementById('editModal').classList.remove('active');
+            }
+        }
+
+        function switchModalMode(mode, btn) {
+            document.querySelectorAll('.modal-tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            if (mode === 'single') {
+                document.getElementById('modeSingle').style.display = 'block';
+                document.getElementById('modeCycle').style.display = 'none';
+            } else {
+                document.getElementById('modeSingle').style.display = 'none';
+                document.getElementById('modeCycle').style.display = 'block';
+            }
+        }
+
+        // 1. Lưu chỉnh sửa 1 ngày riêng lẻ
+        function saveSingleDay() {
+            const customData = getCustomData();
+            const shiftVal = document.getElementById('modalSingleShiftSelect').value;
+            const noteVal = document.getElementById('modalSingleNote').value.trim();
+
+            if (shiftVal === 'AUTO' && !noteVal) {
+                delete customData[selectedDateStr];
+            } else {
+                customData[selectedDateStr] = { shift: shiftVal, note: noteVal };
+            }
+
+            saveCustomData(customData);
+            document.getElementById('editModal').classList.remove('active');
+            renderCurrentTab();
+            showToast("Đã lưu chỉnh sửa ngày!");
+        }
+
+        // 2. Lưu mốc chu kỳ mới (Với 02 lựa chọn rõ ràng)
+        function saveCycleAnchor() {
+            const shiftIndex = parseInt(document.getElementById('modalCycleShiftIndex').value, 10);
+            const applyOption = document.querySelector('input[name="cycleApplyMode"]:checked').value;
+
+            if (applyOption === 'all') {
+                // Lựa chọn 1: TOÀN BỘ lịch (Trước & Sau ngày này) -> Xóa toàn bộ mốc cũ, đặt mốc duy nhất
+                const newAnchors = [{ date: selectedDateStr, shiftIndex: shiftIndex }];
+                saveAnchors(newAnchors);
+                showToast("Đã thiết lập mốc gốc duy nhất cho TOÀN BỘ lịch!");
+            } else {
+                // Lựa chọn 2: TỪ NGÀY NÀY TRỞ ĐI -> Giữ nguyên lịch quá khứ
+                let anchors = getAnchors();
+                // Loại bỏ các mốc trùng hoặc sau ngày được chọn
+                anchors = anchors.filter(a => a.date < selectedDateStr);
+                // Thêm mốc mới
+                anchors.push({ date: selectedDateStr, shiftIndex: shiftIndex });
+                saveAnchors(anchors);
+                showToast(`Đã đổi mốc xoay ca TỪ NGÀY ${formatDateDisplay(selectedDateStr)} TRỞ ĐI!`);
+            }
+
+            document.getElementById('editModal').classList.remove('active');
+            renderCurrentTab();
+        }
+
+        function deleteAnchor(dateStr) {
+            let anchors = getAnchors();
+            if (anchors.length <= 1) return;
+            anchors = anchors.filter(a => a.date !== dateStr);
             saveAnchors(anchors);
-            renderCalendar();
+            renderCurrentTab();
+            showToast("Đã xóa mốc chu kỳ!");
         }
-    }
 
-    function switchView(viewId, tabBtn) {
-        document.querySelectorAll('.view-content').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+        function resetAllAnchors() {
+            if (confirm("Bạn có chắc chắn muốn đặt lại tất cả về mốc mặc định (19/09/2026 = Ca 1)?")) {
+                localStorage.removeItem('shift_anchors_v2');
+                renderCurrentTab();
+                showToast("Đã đặt lại mốc mặc định!");
+            }
+        }
 
-        document.getElementById(viewId).classList.add('active');
-        tabBtn.classList.add('active');
-    }
+        // Utilities
+        function formatDateDisplay(dateStr) {
+            const p = dateStr.split('-');
+            return `${p[2]}/${p[1]}/${p[0]}`;
+        }
 
-    renderCalendar();
-</script>
+        function getWeekdayName(d) {
+            const days = ['Chủ Nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
+            return days[d.getDay()];
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+    </script>
 </body>
 </html>
