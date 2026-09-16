@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="vi" class="h-full bg-slate-100 selection:bg-indigo-500 selection:text-white">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Lịch Làm Việc Ca Xoay - P.H.PHƯỚC</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        brand: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        ca1: { light: '#fef3c7', DEFAULT: '#f59e0b', dark: '#b45309' },
+                        ca2: { light: '#e0f2fe', DEFAULT: '#0284c7', dark: '#0369a1' },
+                        ca3: { light: '#f3e8ff', DEFAULT: '#9333ea', dark: '#6b21a8' },
+                        nghi: { light: '#dcfce7', DEFAULT: '#16a34a', dark: '#15803d' },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        .bottom-sheet-backdrop { background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 0.4; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+        .animate-today-ring { animation: pulse-ring 2s infinite ease-in-out; }
+    </style>
+</head>
+<body class="h-full text-slate-800 flex flex-col pb-20 md:pb-6 bg-slate-100">
+
+    <!-- Top Header Bar with Owner Branding "P.H.PHƯỚC" -->
+    <header class="bg-slate-900 text-white sticky top-0 z-30 shadow-md border-b border-slate-800">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+            
+            <!-- Brand Logo & Owner Identifier -->
+            <div class="flex items-center gap-3">
+                <!-- Metallic Gold/Indigo Gradient Badge -->
+                <div class="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-indigo-600 to-purple-600 p-0.5 shadow-lg shadow-indigo-950/50">
+                    <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center font-brand font-bold text-amber-400 text-sm tracking-wider">
+                        PHP
+                    </div>
+                    <!-- Verified Royal Crown Badge -->
+                    <span class="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 text-slate-950 rounded-full flex items-center justify-center text-[9px] font-black border border-slate-900 shadow-xs">
+                        👑
+                    </span>
+                </div>
+
+                <div>
+                    <div class="flex items-center gap-1.5">
+                        <h1 class="font-brand font-bold text-base tracking-wide bg-gradient-to-r from-amber-200 via-white to-amber-400 bg-clip-text text-transparent">
+                            P.H.PHƯỚC
+                        </h1>
+                        <span class="bg-indigo-500/30 text-indigo-300 border border-indigo-400/30 text-[9px] font-bold px-1.5 py-0.2 rounded-full flex items-center gap-0.5">
+                            <i data-lucide="check-circle-2" class="w-2.5 h-2.5 text-amber-400"></i> Official
+                        </span>
+                    </div>
+                    <p class="text-[10px] text-slate-400 font-medium">Quản Lý Lịch Ca Xoay Real-Time</p>
+                </div>
+            </div>
+
+            <!-- Quick Action Header Controls -->
+            <div class="flex items-center gap-2">
+                <button onclick="goToToday()" class="px-2.5 py-1.5 bg-indigo-600/80 hover:bg-indigo-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1 transition shadow-xs">
+                    <i data-lucide="crosshair" class="w-3.5 h-3.5 text-amber-300"></i>
+                    <span>Hôm nay</span>
+                </button>
+                <button onclick="openAnchorsModal()" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition border border-slate-700" title="Quản lý mốc điều chuyển">
+                    <i data-lucide="git-branch" class="w-4 h-4 text-amber-400"></i>
+                </button>
+                <button onclick="openBackupModal()" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition border border-slate-700" title="Sao lưu">
+                    <i data-lucide="database" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Month Navigation Bar -->
+    <div class="bg-white border-b border-slate-200 py-2.5 px-4 shadow-xs">
+        <div class="max-w-5xl mx-auto flex items-center justify-between gap-2">
+            <button onclick="changeMonth(-1)" class="p-2 hover:bg-slate-100 rounded-xl transition text-slate-600 active:scale-95">
+                <i data-lucide="chevron-left" class="w-5 h-5"></i>
+            </button>
+            
+            <div class="text-center flex items-center gap-2">
+                <h2 id="currentMonthYearLabel" class="text-base font-bold text-slate-900 tracking-tight">Tháng -- / ----</h2>
+                <select id="quickYearSelect" onchange="jumpToYear(this.value)" class="bg-slate-100 border border-slate-200 text-xs font-bold rounded-lg px-2 py-1 text-slate-700 focus:outline-none">
+                    <option value="2025">2025</option>
+                    <option value="2026" selected>2026</option>
+                    <option value="2027">2027</option>
+                    <option value="2028">2028</option>
+                    <option value="2029">2029</option>
+                    <option value="2030">2030</option>
+                </select>
+            </div>
+
+            <button onclick="changeMonth(1)" class="p-2 hover:bg-slate-100 rounded-xl transition text-slate-600 active:scale-95">
+                <i data-lucide="chevron-right" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Legend Bar for Shifts -->
+    <div class="bg-slate-200/60 border-b border-slate-200/80 py-2 px-4 overflow-x-auto custom-scrollbar">
+        <div class="max-w-5xl mx-auto flex items-center gap-2 text-[11px] font-semibold whitespace-nowrap">
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-100 text-amber-900 border border-amber-300">
+                <span class="w-2 h-2 rounded-full bg-amber-500"></span> Ca 1 (07h-15h)
+            </span>
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-sky-100 text-sky-900 border border-sky-300">
+                <span class="w-2 h-2 rounded-full bg-sky-600"></span> Ca 2 (15h-23h)
+            </span>
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-purple-100 text-purple-900 border border-purple-300">
+                <span class="w-2 h-2 rounded-full bg-purple-600"></span> Ca 3 (23h-07h)
+            </span>
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-900 border border-emerald-300">
+                <span class="w-2 h-2 rounded-full bg-emerald-600"></span> Nghỉ
+            </span>
+        </div>
+    </div>
+
+    <!-- Main Content Body -->
+    <main class="max-w-5xl w-full mx-auto p-3 sm:p-4 flex-1">
+
+        <!-- TAB 1: CALENDAR GRID VIEW -->
+        <div id="viewCalendarContainer" class="space-y-4">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <!-- Day Headers -->
+                <div class="grid grid-cols-7 border-b border-slate-200 bg-slate-50 text-center text-[11px] font-bold text-slate-500 py-2.5">
+                    <div class="text-rose-500">CN</div>
+                    <div>T2</div>
+                    <div>T3</div>
+                    <div>T4</div>
+                    <div>T5</div>
+                    <div>T6</div>
+                    <div class="text-indigo-600">T7</div>
+                </div>
+
+                <!-- Calendar Grid Cells -->
+                <div id="calendarGrid" class="grid grid-cols-7 bg-slate-200 gap-px">
+                    <!-- Rendered dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: LIST VIEW -->
+        <div id="viewListContainer" class="hidden space-y-3">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+                <h3 class="font-bold text-slate-800 text-sm mb-3 flex items-center gap-2">
+                    <i data-lucide="list-ordered" class="w-4 h-4 text-indigo-600"></i>
+                    Danh Sách Chi Tiết Ca Trực
+                </h3>
+                <div id="listViewGrid" class="space-y-2">
+                    <!-- Rendered dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: NOTES VIEW -->
+        <div id="viewNotesContainer" class="hidden space-y-3">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+                <div class="flex items-center justify-between gap-2 mb-4">
+                    <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                        <i data-lucide="notebook" class="w-4 h-4 text-indigo-600"></i>
+                        Ghi Chú Công Việc
+                    </h3>
+                    <input type="text" id="noteSearchInput" oninput="renderNotesList()" placeholder="Tìm ghi chú..." class="bg-slate-100 border border-slate-200 rounded-lg px-3 py-1 text-xs w-36 focus:outline-none">
+                </div>
+                <div id="notesListGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <!-- Rendered dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: STATISTICS VIEW -->
+        <div id="viewStatsContainer" class="hidden space-y-4">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-4">
+                <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                    <i data-lucide="pie-chart" class="w-4 h-4 text-indigo-600"></i>
+                    Thống Kê Tháng & Giờ Làm Việc
+                </h3>
+
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div class="p-3 bg-amber-50 rounded-xl border border-amber-200/80">
+                        <div class="text-xs text-amber-800 font-semibold">Ca 1 (Sáng)</div>
+                        <div class="text-xl font-bold text-amber-900 mt-1" id="statCa1Count">0</div>
+                        <p class="text-[10px] text-amber-700" id="statCa1Hours">0 giờ</p>
+                    </div>
+                    <div class="p-3 bg-sky-50 rounded-xl border border-sky-200/80">
+                        <div class="text-xs text-sky-800 font-semibold">Ca 2 (Chiều)</div>
+                        <div class="text-xl font-bold text-sky-900 mt-1" id="statCa2Count">0</div>
+                        <p class="text-[10px] text-sky-700" id="statCa2Hours">0 giờ</p>
+                    </div>
+                    <div class="p-3 bg-purple-50 rounded-xl border border-purple-200/80">
+                        <div class="text-xs text-purple-800 font-semibold">Ca 3 (Đêm)</div>
+                        <div class="text-xl font-bold text-purple-900 mt-1" id="statCa3Count">0</div>
+                        <p class="text-[10px] text-purple-700" id="statCa3Hours">0 giờ</p>
+                    </div>
+                    <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200/80">
+                        <div class="text-xs text-emerald-800 font-semibold">Ngày Nghỉ</div>
+                        <div class="text-xl font-bold text-emerald-900 mt-1" id="statNghiCount">0</div>
+                        <p class="text-[10px] text-emerald-700" id="statNghiPercent">0%</p>
+                    </div>
+                </div>
+
+                <div class="p-3 bg-slate-900 text-white rounded-xl flex items-center justify-between">
+                    <div>
+                        <span class="text-xs text-slate-400">Tổng Giờ Làm Tháng</span>
+                        <div class="text-xl font-black text-amber-400" id="statTotalHours">0 giờ</div>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xs text-slate-400">Tăng Ca (OT)</span>
+                        <div class="text-base font-bold text-rose-400" id="statTotalOT">+0 giờ</div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 rounded-xl p-3 border border-slate-200 h-48 flex items-center justify-center">
+                    <canvas id="shiftChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Watermark Branding -->
+        <footer class="mt-8 mb-4 text-center space-y-1">
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-slate-200 rounded-full shadow-2xs">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                <span class="font-brand font-bold text-xs text-slate-800 tracking-wider">P.H.PHƯỚC</span>
+                <span class="text-slate-300">|</span>
+                <span class="text-[10px] text-slate-500">Ứng dụng quản lý lịch ca © 2026</span>
+            </div>
+            <p class="text-[10px] text-slate-400">Thiết kế tối ưu Mobile & Tự động sao lưu dữ liệu</p>
+        </footer>
+    </main>
+
+    <!-- Mobile Bottom Navigation Bar (Fixed) -->
+    <nav class="fixed bottom-0 left-0 right-0 z-40 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 text-slate-400 px-2 py-1.5">
+        <div class="max-w-md mx-auto grid grid-cols-4 gap-1 text-center">
+            <button id="navTabCalendar" onclick="switchView('calendar')" class="py-1 flex flex-col items-center gap-0.5 text-amber-400 font-bold transition">
+                <i data-lucide="calendar-grid" class="w-5 h-5"></i>
+                <span class="text-[10px]">Lịch Tháng</span>
+            </button>
+            <button id="navTabList" onclick="switchView('list')" class="py-1 flex flex-col items-center gap-0.5 hover:text-white transition">
+                <i data-lucide="list-checks" class="w-5 h-5"></i>
+                <span class="text-[10px]">Danh Sách</span>
+            </button>
+            <button id="navTabNotes" onclick="switchView('notes')" class="py-1 flex flex-col items-center gap-0.5 hover:text-white transition">
+                <i data-lucide="notebook-pen" class="w-5 h-5"></i>
+                <span class="text-[10px]">Ghi Chú</span>
+            </button>
+            <button id="navTabStats" onclick="switchView('stats')" class="py-1 flex flex-col items-center gap-0.5 hover:text-white transition">
+                <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+                <span class="text-[10px]">Thống Kê</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Bottom Sheet Modal: Touch-First Edit & Shift Transfer -->
+    <div id="editModal" class="fixed inset-0 z-50 hidden bottom-sheet-backdrop flex flex-col justify-end">
+        <div class="bg-white rounded-t-3xl max-w-lg w-full mx-auto p-5 space-y-4 shadow-2xl border-t border-slate-100 max-h-[85vh] overflow-y-auto custom-scrollbar transform transition-transform">
+            
+            <!-- Grab Handle Bar -->
+            <div class="w-12 h-1 bg-slate-300 rounded-full mx-auto -mt-1 mb-2"></div>
+
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div>
+                    <h3 id="modalDateTitle" class="font-bold text-base text-slate-900">Ngày --/--/----</h3>
+                    <p id="modalDateSubtitle" class="text-xs text-slate-500">Tùy chỉnh lịch ca hoặc đổi mốc xoay</p>
+                </div>
+                <button onclick="closeModal()" class="p-1.5 text-slate-400 hover:text-slate-800 rounded-full bg-slate-100">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Action Selector: Mode 1 vs Mode 2 -->
+            <div class="bg-slate-100 p-1 rounded-xl grid grid-cols-2 gap-1 text-xs font-bold">
+                <button id="btnModeSingle" onclick="setEditMode('single')" class="py-2 rounded-lg bg-white text-indigo-700 shadow-2xs">
+                    💾 Lưu ngày này
+                </button>
+                <button id="btnModeTransfer" onclick="setEditMode('transfer')" class="py-2 rounded-lg text-slate-600 hover:text-slate-900">
+                    🔄 Đổi chu kỳ từ ngày này
+                </button>
+            </div>
+
+            <!-- Mode 1 Container: Single Day Override -->
+            <div id="modeSingleContainer" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Ca trực ngày này:</label>
+                    <select id="modalShiftSelect" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs font-semibold focus:ring-2 focus:ring-indigo-500">
+                        <option value="AUTO">-- Tự động theo chu kỳ xoay --</option>
+                        <option value="Ca 1">🌅 Ca 1 (07:00 - 15:00)</option>
+                        <option value="Ca 2">🌆 Ca 2 (15:00 - 23:00)</option>
+                        <option value="Ca 3">🌃 Ca 3 (23:00 - 07:00)</option>
+                        <option value="Nghỉ">☕ Ngày Nghỉ</option>
+                        <option value="Tăng Ca">⚡ Tăng Ca (Toàn ca)</option>
+                        <option value="Nghỉ Phép">🌴 Nghỉ Phép</option>
+                        <option value="Nghỉ Bù">🏖️ Nghỉ Bù</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Số giờ tăng ca thêm (OT):</label>
+                    <input type="number" min="0" max="16" step="0.5" id="modalOTInput" placeholder="0" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs font-semibold focus:ring-2 focus:ring-indigo-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Ghi chú công việc:</label>
+                    <textarea id="modalNoteInput" rows="2" placeholder="Nhập ghi chú chi tiết..." class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-indigo-500 resize-none"></textarea>
+                </div>
+            </div>
+
+            <!-- Mode 2 Container: Transfer Shift & New Cycle Anchor -->
+            <div id="modeTransferContainer" class="hidden space-y-3">
+                <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 space-y-1">
+                    <p class="font-bold flex items-center gap-1">
+                        <i data-lucide="info" class="w-4 h-4 text-amber-600"></i> Điều chuyển ca & Thiết lập chu kỳ mới
+                    </p>
+                    <p class="text-[11px] text-amber-800">
+                        Tất cả các ngày từ ngày này trở về sau sẽ tự động xoay ca theo vị trí bạn chọn. Các ngày trong quá khứ được giữ nguyên.
+                    </p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Chọn vị trí chu kỳ bắt đầu từ ngày này:</label>
+                    <select id="modalAnchorSelect" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs font-semibold focus:ring-2 focus:ring-indigo-500">
+                        <option value="0">Ca 1 - Ngày 1/2 (Sáng 07h-15h)</option>
+                        <option value="1">Ca 1 - Ngày 2/2 (Sáng 07h-15h)</option>
+                        <option value="2">Ca 2 - Ngày 1/2 (Chiều 15h-23h)</option>
+                        <option value="3">Ca 2 - Ngày 2/2 (Chiều 15h-23h)</option>
+                        <option value="4">Ca 3 - Ngày 1/2 (Đêm 23h-07h)</option>
+                        <option value="5">Ca 3 - Ngày 2/2 (Đêm 23h-07h)</option>
+                        <option value="6">Nghỉ - Ngày 1/2</option>
+                        <option value="7">Nghỉ - Ngày 2/2</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-2">
+                <button onclick="resetDayToAuto()" class="text-xs text-rose-600 font-semibold hover:underline">
+                    Xóa tùy chỉnh
+                </button>
+                <div class="flex items-center gap-2">
+                    <button onclick="closeModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl">
+                        Hủy
+                    </button>
+                    <button onclick="saveDayDetails()" class="px-5 py-2 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-md">
+                        Lưu Thay Đổi
+                    </button>
+                </div>
+            </div>
+
+            <!-- Footer Owner Tag Inside Modal -->
+            <div class="text-center pt-2 border-t border-slate-100 text-[10px] text-slate-400">
+                Tác giả & Chủ sở hữu: <strong class="text-slate-700 font-brand">P.H.PHƯỚC</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Anchors Manager Modal -->
+    <div id="anchorsModal" class="fixed inset-0 z-50 hidden bottom-sheet-backdrop flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="font-bold text-sm text-slate-900 flex items-center gap-2">
+                    <i data-lucide="git-branch" class="w-4 h-4 text-amber-500"></i>
+                    Danh Sách Mốc Điều Chuyển Ca
+                </h3>
+                <button onclick="closeAnchorsModal()" class="p-1 text-slate-400 hover:text-slate-800">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <p class="text-xs text-slate-500">
+                Dưới đây là các thời điểm bạn được điều chuyển ca. Bạn có thể xóa mốc điều chuyển để quay lại chu kỳ cũ.
+            </p>
+
+            <div id="anchorsListGrid" class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar">
+                <!-- Rendered dynamically -->
+            </div>
+
+            <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+                <button onclick="resetAllAnchors()" class="text-xs text-rose-600 font-semibold hover:underline">
+                    Đặt lại mặc định
+                </button>
+                <button onclick="closeAnchorsModal()" class="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl">
+                    Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Backup / Restore Modal -->
+    <div id="backupModal" class="fixed inset-0 z-50 hidden bottom-sheet-backdrop flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="font-bold text-sm text-slate-900 flex items-center gap-2">
+                    <i data-lucide="database" class="w-4 h-4 text-indigo-600"></i>
+                    Sao Lưu & Khôi Phục Dữ Liệu
+                </h3>
+                <button onclick="closeBackupModal()" class="p-1 text-slate-400 hover:text-slate-800">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <p class="text-xs text-slate-600">
+                Xuất file sao lưu chứa toàn bộ ghi chú và lịch điều chuyển ca của <strong class="text-indigo-700">P.H.PHƯỚC</strong>.
+            </p>
+
+            <div class="space-y-2">
+                <button onclick="exportDataJSON()" class="w-full py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition border border-indigo-200">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                    Tải File Sao Lưu (JSON)
+                </button>
+                <label class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition cursor-pointer border border-slate-300">
+                    <i data-lucide="upload" class="w-4 h-4"></i>
+                    <span>Nhập File Khôi Phục (JSON)</span>
+                    <input type="file" accept=".json" onchange="importDataJSON(event)" class="hidden">
+                </label>
+            </div>
+
+            <div class="text-right pt-2 border-t border-slate-100">
+                <button onclick="closeBackupModal()" class="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl">
+                    Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 8-Day Cycle Pattern Definition
+        const CYCLE_PATTERN = [
+            { id: "Ca 1", cyclePos: "Ca 1 (Ngày 1/2)", name: "Ca 1", time: "07:00 - 15:00", hours: 8, bg: "bg-amber-100 text-amber-900 border-amber-300", badge: "bg-amber-500" },
+            { id: "Ca 1", cyclePos: "Ca 1 (Ngày 2/2)", name: "Ca 1", time: "07:00 - 15:00", hours: 8, bg: "bg-amber-100 text-amber-900 border-amber-300", badge: "bg-amber-500" },
+            { id: "Ca 2", cyclePos: "Ca 2 (Ngày 1/2)", name: "Ca 2", time: "15:00 - 23:00", hours: 8, bg: "bg-sky-100 text-sky-900 border-sky-300", badge: "bg-sky-600" },
+            { id: "Ca 2", cyclePos: "Ca 2 (Ngày 2/2)", name: "Ca 2", time: "15:00 - 23:00", hours: 8, bg: "bg-sky-100 text-sky-900 border-sky-300", badge: "bg-sky-600" },
+            { id: "Ca 3", cyclePos: "Ca 3 (Ngày 1/2)", name: "Ca 3", time: "23:00 - 07:00", hours: 8, bg: "bg-purple-100 text-purple-900 border-purple-300", badge: "bg-purple-600" },
+            { id: "Ca 3", cyclePos: "Ca 3 (Ngày 2/2)", name: "Ca 3", time: "23:00 - 07:00", hours: 8, bg: "bg-purple-100 text-purple-900 border-purple-300", badge: "bg-purple-600" },
+            { id: "Nghỉ", cyclePos: "Nghỉ (Ngày 1/2)", name: "Nghỉ", time: "Cả ngày", hours: 0, bg: "bg-emerald-100 text-emerald-900 border-emerald-300", badge: "bg-emerald-600" },
+            { id: "Nghỉ", cyclePos: "Nghỉ (Ngày 2/2)", name: "Nghỉ", time: "Cả ngày", hours: 0, bg: "bg-emerald-100 text-emerald-900 border-emerald-300", badge: "bg-emerald-600" }
+        ];
+
+        // State variables
+        let currentDate = new Date(); // Real-time date auto detection
+        let activeView = 'calendar';
+        let selectedDayKey = '';
+        let activeEditMode = 'single'; // 'single' or 'transfer'
+        let shiftChartInstance = null;
+
+        // LocalStorage Helpers
+        function getAnchors() {
+            const saved = localStorage.getItem('php_shift_anchors');
+            if (saved) {
+                return JSON.parse(saved);
+            }
+            // Default initial anchor if none exists
+            return [{ date: '2026-01-01', cycleIndex: 0 }];
+        }
+
+        function saveAnchors(anchorsArr) {
+            // Sort anchors by date ascending
+            anchorsArr.sort((a, b) => new Date(a.date) - new Date(b.date));
+            localStorage.setItem('php_shift_anchors', JSON.stringify(anchorsArr));
+        }
+
+        function getCustomOverrides() {
+            return JSON.parse(localStorage.getItem('php_shift_overrides') || '{}');
+        }
+
+        function saveCustomOverrides(data) {
+            localStorage.setItem('php_shift_overrides', JSON.stringify(data));
+        }
+
+        function formatDateKey(d) {
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${day}`;
+        }
+
+        // Dynamic Shift Calculation with Multi-Anchor Support
+        function getShiftForDate(dateObj) {
+            const dateKey = formatDateKey(dateObj);
+            const overrides = getCustomOverrides();
+            const custom = overrides[dateKey];
+
+            // Single day manual override
+            if (custom && custom.shift && custom.shift !== 'AUTO') {
+                const shiftVal = custom.shift;
+                let bg = "bg-rose-100 text-rose-900 border-rose-300";
+                let badge = "bg-rose-600";
+                let hours = 8;
+                let time = "Tùy chỉnh";
+
+                if (shiftVal.includes("Ca 1")) { bg = "bg-amber-100 text-amber-900 border-amber-300"; badge = "bg-amber-500"; time = "07:00 - 15:00"; hours = 8; }
+                else if (shiftVal.includes("Ca 2")) { bg = "bg-sky-100 text-sky-900 border-sky-300"; badge = "bg-sky-600"; time = "15:00 - 23:00"; hours = 8; }
+                else if (shiftVal.includes("Ca 3")) { bg = "bg-purple-100 text-purple-900 border-purple-300"; badge = "bg-purple-600"; time = "23:00 - 07:00"; hours = 8; }
+                else if (shiftVal === "Nghỉ" || shiftVal === "Nghỉ Phép" || shiftVal === "Nghỉ Bù") { bg = "bg-emerald-100 text-emerald-900 border-emerald-300"; badge = "bg-emerald-600"; time = "Cả ngày"; hours = 0; }
+                else if (shiftVal === "Tăng Ca") { bg = "bg-rose-100 text-rose-900 border-rose-300"; badge = "bg-rose-600"; time = "Tăng Ca"; hours = 8; }
+
+                return {
+                    name: shiftVal,
+                    time: time,
+                    hours: hours,
+                    bg: bg,
+                    badge: badge,
+                    isCustom: true,
+                    otHours: parseFloat(custom.otHours || 0),
+                    note: custom.note || ""
+                };
+            }
+
+            // Find applicable anchor for this date
+            const anchors = getAnchors();
+            let applicableAnchor = anchors[0];
+
+            for (let i = 0; i < anchors.length; i++) {
+                if (anchors[i].date <= dateKey) {
+                    applicableAnchor = anchors[i];
+                } else {
+                    break;
+                }
+            }
+
+            // Calculate diff days from applicable anchor
+            const anchorDateParts = applicableAnchor.date.split('-');
+            const anchorDate = new Date(parseInt(anchorDateParts[0]), parseInt(anchorDateParts[1]) - 1, parseInt(anchorDateParts[2]));
+            
+            const utc1 = Date.UTC(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+            const utc2 = Date.UTC(anchorDate.getFullYear(), anchorDate.getMonth(), anchorDate.getDate());
+            const diffDays = Math.floor((utc1 - utc2) / (1000 * 60 * 60 * 24));
+
+            const cycleIndex = ((applicableAnchor.cycleIndex + diffDays) % 8 + 8) % 8;
+            const cycleShift = CYCLE_PATTERN[cycleIndex];
+
+            return {
+                name: cycleShift.name,
+                time: cycleShift.time,
+                hours: cycleShift.hours,
+                bg: cycleShift.bg,
+                badge: cycleShift.badge,
+                isCustom: false,
+                otHours: custom ? parseFloat(custom.otHours || 0) : 0,
+                note: custom ? (custom.note || "") : ""
+            };
+        }
+
+        function switchView(viewName) {
+            activeView = viewName;
+
+            // Nav tab highlighting
+            ['Calendar', 'List', 'Notes', 'Stats'].forEach(tab => {
+                const btn = document.getElementById(`navTab${tab}`);
+                if (tab.toLowerCase() === viewName) {
+                    btn.className = 'py-1 flex flex-col items-center gap-0.5 text-amber-400 font-bold transition';
+                } else {
+                    btn.className = 'py-1 flex flex-col items-center gap-0.5 text-slate-400 hover:text-white transition';
+                }
+            });
+
+            document.getElementById('viewCalendarContainer').classList.toggle('hidden', viewName !== 'calendar');
+            document.getElementById('viewListContainer').classList.toggle('hidden', viewName !== 'list');
+            document.getElementById('viewNotesContainer').classList.toggle('hidden', viewName !== 'notes');
+            document.getElementById('viewStatsContainer').classList.toggle('hidden', viewName !== 'stats');
+
+            renderCurrentView();
+        }
+
+        function changeMonth(delta) {
+            currentDate.setMonth(currentDate.getMonth() + delta);
+            renderCurrentView();
+        }
+
+        function jumpToYear(yearVal) {
+            currentDate.setFullYear(parseInt(yearVal));
+            renderCurrentView();
+        }
+
+        function goToToday() {
+            currentDate = new Date();
+            renderCurrentView();
+        }
+
+        function renderCurrentView() {
+            const y = currentDate.getFullYear();
+            const m = String(currentDate.getMonth() + 1).padStart(2, '0');
+            document.getElementById('currentMonthYearLabel').innerText = `Tháng ${m} / ${y}`;
+            document.getElementById('quickYearSelect').value = y;
+
+            if (activeView === 'calendar') renderCalendarGrid();
+            else if (activeView === 'list') renderListView();
+            else if (activeView === 'notes') renderNotesList();
+            else if (activeView === 'stats') updateMonthlyStats();
+
+            lucide.createIcons();
+        }
+
+        function renderCalendarGrid() {
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = '';
+
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+
+            const firstDayOfWeek = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const todayKey = formatDateKey(new Date());
+
+            // Empty cells before 1st day of month
+            for (let i = 0; i < firstDayOfWeek; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'bg-slate-50/60 min-h-[78px] sm:min-h-[95px]';
+                grid.appendChild(emptyCell);
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateObj = new Date(year, month, day);
+                const dateKey = formatDateKey(dateObj);
+                const shift = getShiftForDate(dateObj);
+                const isToday = dateKey === todayKey;
+
+                const cell = document.createElement('div');
+                cell.className = `bg-white p-1.5 min-h-[78px] sm:min-h-[95px] flex flex-col justify-between cursor-pointer hover:bg-slate-50 transition relative ${isToday ? 'ring-2 ring-amber-500 z-10 bg-amber-50/20' : ''}`;
+                cell.onclick = () => openEditModal(dateKey, dateObj);
+
+                // Top row inside cell
+                const topRow = document.createElement('div');
+                topRow.className = 'flex items-center justify-between';
+
+                const dayNum = document.createElement('span');
+                dayNum.className = `text-xs font-bold ${isToday ? 'bg-amber-500 text-slate-950 px-1.5 py-0.2 rounded-full font-black animate-today-ring' : 'text-slate-800'}`;
+                dayNum.innerText = day;
+
+                const indicators = document.createElement('div');
+                indicators.className = 'flex items-center gap-0.5';
+
+                if (shift.isCustom) {
+                    const dot = document.createElement('span');
+                    dot.className = 'w-1.5 h-1.5 rounded-full bg-rose-500';
+                    indicators.appendChild(dot);
+                }
+
+                if (shift.note) {
+                    const noteIcon = document.createElement('i');
+                    noteIcon.setAttribute('data-lucide', 'file-text');
+                    noteIcon.className = 'w-3 h-3 text-amber-500';
+                    indicators.appendChild(noteIcon);
+                }
+
+                topRow.appendChild(dayNum);
+                topRow.appendChild(indicators);
+
+                // Shift Badge
+                const shiftBadge = document.createElement('div');
+                shiftBadge.className = `mt-1 p-1 rounded-lg border text-[10px] font-bold text-center leading-tight shadow-2xs ${shift.bg}`;
+                shiftBadge.innerText = shift.name;
+
+                // OT info
+                const otBadge = document.createElement('div');
+                if (shift.otHours > 0) {
+                    otBadge.className = 'text-[9px] font-extrabold text-rose-600 text-right mt-0.5';
+                    otBadge.innerText = `+${shift.otHours}h OT`;
+                }
+
+                cell.appendChild(topRow);
+                cell.appendChild(shiftBadge);
+                cell.appendChild(otBadge);
+
+                grid.appendChild(cell);
+            }
+        }
+
+        function renderListView() {
+            const listGrid = document.getElementById('listViewGrid');
+            listGrid.innerHTML = '';
+
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const daysOfWeek = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateObj = new Date(year, month, day);
+                const dateKey = formatDateKey(dateObj);
+                const shift = getShiftForDate(dateObj);
+                const dayName = daysOfWeek[dateObj.getDay()];
+
+                const item = document.createElement('div');
+                item.className = 'p-2.5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white transition flex items-center justify-between gap-2 cursor-pointer';
+                item.onclick = () => openEditModal(dateKey, dateObj);
+
+                item.innerHTML = `
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-10 h-10 rounded-lg bg-white border border-slate-200 flex flex-col items-center justify-center font-bold text-xs shrink-0">
+                            <span class="text-[9px] text-slate-400 font-normal">${dayName.replace('Thứ ', 'T')}</span>
+                            <span>${day}</span>
+                        </div>
+                        <div>
+                            <div class="font-bold text-xs text-slate-800">${dayName}, ${day}/${month + 1}</div>
+                            <div class="text-[10px] text-slate-500">${shift.time} ${shift.otHours ? `• <strong class="text-rose-600">+${shift.otHours}h OT</strong>` : ''}</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        ${shift.note ? `<span class="text-[10px] bg-amber-50 text-amber-800 px-2 py-0.5 rounded border border-amber-200 truncate max-w-[100px]">${shift.note}</span>` : ''}
+                        <span class="px-2.5 py-1 rounded-lg text-xs font-bold border ${shift.bg}">${shift.name}</span>
+                    </div>
+                `;
+                listGrid.appendChild(item);
+            }
+        }
+
+        function renderNotesList() {
+            const container = document.getElementById('notesListGrid');
+            container.innerHTML = '';
+
+            const searchTerm = document.getElementById('noteSearchInput').value.toLowerCase().trim();
+            const overrides = getCustomOverrides();
+
+            const noteEntries = Object.keys(overrides)
+                .filter(key => overrides[key].note && overrides[key].note.trim() !== '')
+                .filter(key => !searchTerm || overrides[key].note.toLowerCase().includes(searchTerm) || key.includes(searchTerm))
+                .sort((a, b) => new Date(b) - new Date(a));
+
+            if (noteEntries.length === 0) {
+                container.innerHTML = `<p class="col-span-full py-8 text-center text-xs text-slate-400">Không có ghi chú nào.</p>`;
+                return;
+            }
+
+            noteEntries.forEach(dateKey => {
+                const dateObj = new Date(dateKey);
+                const shift = getShiftForDate(dateObj);
+                const data = overrides[dateKey];
+
+                const card = document.createElement('div');
+                card.className = 'bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-1.5 cursor-pointer hover:border-indigo-300';
+                card.onclick = () => openEditModal(dateKey, dateObj);
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-slate-200 pb-1.5">
+                        <span class="font-bold text-xs text-slate-700">${dateKey}</span>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded border ${shift.bg}">${shift.name}</span>
+                    </div>
+                    <p class="text-xs text-slate-800 whitespace-pre-line">${data.note}</p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function updateMonthlyStats() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            let countCa1 = 0, countCa2 = 0, countCa3 = 0, countNghi = 0;
+            let totalOT = 0;
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateObj = new Date(year, month, day);
+                const shift = getShiftForDate(dateObj);
+
+                if (shift.name.includes("Ca 1")) countCa1++;
+                else if (shift.name.includes("Ca 2")) countCa2++;
+                else if (shift.name.includes("Ca 3")) countCa3++;
+                else if (shift.name === "Nghỉ" || shift.name === "Nghỉ Phép" || shift.name === "Nghỉ Bù") countNghi++;
+
+                totalOT += shift.otHours || 0;
+            }
+
+            const hoursCa1 = countCa1 * 8;
+            const hoursCa2 = countCa2 * 8;
+            const hoursCa3 = countCa3 * 8;
+            const grandTotalHours = hoursCa1 + hoursCa2 + hoursCa3 + totalOT;
+
+            document.getElementById('statCa1Count').innerText = countCa1;
+            document.getElementById('statCa1Hours').innerText = `${hoursCa1} giờ`;
+            document.getElementById('statCa2Count').innerText = countCa2;
+            document.getElementById('statCa2Hours').innerText = `${hoursCa2} giờ`;
+            document.getElementById('statCa3Count').innerText = countCa3;
+            document.getElementById('statCa3Hours').innerText = `${hoursCa3} giờ`;
+            document.getElementById('statNghiCount').innerText = countNghi;
+            document.getElementById('statNghiPercent').innerText = `${Math.round((countNghi / daysInMonth) * 100)}% tháng`;
+            document.getElementById('statTotalHours').innerText = `${grandTotalHours} giờ`;
+            document.getElementById('statTotalOT').innerText = `+${totalOT} giờ`;
+
+            renderChart([countCa1, countCa2, countCa3, countNghi]);
+        }
+
+        function renderChart(dataCounts) {
+            const ctx = document.getElementById('shiftChart').getContext('2d');
+            if (shiftChartInstance) shiftChartInstance.destroy();
+
+            shiftChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Ca 1', 'Ca 2', 'Ca 3', 'Nghỉ'],
+                    datasets: [{
+                        data: dataCounts,
+                        backgroundColor: ['#f59e0b', '#0284c7', '#9333ea', '#16a34a'],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                }
+            });
+        }
+
+        function openEditModal(dateKey, dateObj) {
+            selectedDayKey = dateKey;
+            const shift = getShiftForDate(dateObj);
+            const overrides = getCustomOverrides();
+            const currentCustom = overrides[dateKey] || {};
+
+            document.getElementById('modalDateTitle').innerText = `Ngày ${dateObj.getDate()}/${dateObj.getMonth() + 1}/${dateObj.getFullYear()}`;
+            document.getElementById('modalDateSubtitle').innerText = `Lịch ca hiện tại: ${shift.name}`;
+
+            document.getElementById('modalShiftSelect').value = currentCustom.shift || "AUTO";
+            document.getElementById('modalOTInput').value = currentCustom.otHours || "";
+            document.getElementById('modalNoteInput').value = currentCustom.note || "";
+
+            setEditMode('single');
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').classList.add('hidden');
+        }
+
+        function setEditMode(mode) {
+            activeEditMode = mode;
+            const btnSingle = document.getElementById('btnModeSingle');
+            const btnTransfer = document.getElementById('btnModeTransfer');
+
+            if (mode === 'single') {
+                btnSingle.className = "py-2 rounded-lg bg-white text-indigo-700 shadow-2xs font-bold";
+                btnTransfer.className = "py-2 rounded-lg text-slate-600 hover:text-slate-900";
+                document.getElementById('modeSingleContainer').classList.remove('hidden');
+                document.getElementById('modeTransferContainer').classList.add('hidden');
+            } else {
+                btnTransfer.className = "py-2 rounded-lg bg-white text-indigo-700 shadow-2xs font-bold";
+                btnSingle.className = "py-2 rounded-lg text-slate-600 hover:text-slate-900";
+                document.getElementById('modeTransferContainer').classList.remove('hidden');
+                document.getElementById('modeSingleContainer').classList.add('hidden');
+            }
+        }
+
+        function saveDayDetails() {
+            if (activeEditMode === 'single') {
+                const shiftVal = document.getElementById('modalShiftSelect').value;
+                const otVal = parseFloat(document.getElementById('modalOTInput').value) || 0;
+                const noteVal = document.getElementById('modalNoteInput').value.trim();
+
+                const overrides = getCustomOverrides();
+
+                if (shiftVal === 'AUTO' && otVal === 0 && !noteVal) {
+                    delete overrides[selectedDayKey];
+                } else {
+                    overrides[selectedDayKey] = { shift: shiftVal, otHours: otVal, note: noteVal };
+                }
+                saveCustomOverrides(overrides);
+            } else if (activeEditMode === 'transfer') {
+                const anchorIndex = parseInt(document.getElementById('modalAnchorSelect').value);
+                const anchors = getAnchors();
+
+                // Remove existing anchor on same date if any
+                const filtered = anchors.filter(a => a.date !== selectedDayKey);
+                filtered.push({ date: selectedDayKey, cycleIndex: anchorIndex });
+
+                saveAnchors(filtered);
+            }
+
+            closeModal();
+            renderCurrentView();
+        }
+
+        function resetDayToAuto() {
+            const overrides = getCustomOverrides();
+            delete overrides[selectedDayKey];
+            saveCustomOverrides(overrides);
+            closeModal();
+            renderCurrentView();
+        }
+
+        function openAnchorsModal() {
+            const container = document.getElementById('anchorsListGrid');
+            container.innerHTML = '';
+
+            const anchors = getAnchors();
+
+            anchors.forEach(a => {
+                const cycleInfo = CYCLE_PATTERN[a.cycleIndex];
+                const item = document.createElement('div');
+                item.className = 'p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs';
+                item.innerHTML = `
+                    <div>
+                        <div class="font-bold text-slate-800">${a.date}</div>
+                        <div class="text-[10px] text-slate-500">Mốc: ${cycleInfo.cyclePos}</div>
+                    </div>
+                    ${anchors.length > 1 ? `<button onclick="deleteAnchor('${a.date}')" class="text-rose-600 font-bold hover:underline">Xóa</button>` : '<span class="text-[10px] text-slate-400">Mốc ban đầu</span>'}
+                `;
+                container.appendChild(item);
+            });
+
+            document.getElementById('anchorsModal').classList.remove('hidden');
+        }
+
+        function closeAnchorsModal() {
+            document.getElementById('anchorsModal').classList.add('hidden');
+        }
+
+        function deleteAnchor(dateKey) {
+            let anchors = getAnchors();
+            if (anchors.length <= 1) return;
+            anchors = anchors.filter(a => a.date !== dateKey);
+            saveAnchors(anchors);
+            openAnchorsModal();
+            renderCurrentView();
+        }
+
+        function resetAllAnchors() {
+            if (confirm('Bạn có chắc chắn muốn xóa toàn bộ mốc điều chuyển về mặc định không?')) {
+                localStorage.removeItem('php_shift_anchors');
+                openAnchorsModal();
+                renderCurrentView();
+            }
+        }
+
+        function openBackupModal() { document.getElementById('backupModal').classList.remove('hidden'); }
+        function closeBackupModal() { document.getElementById('backupModal').classList.add('hidden'); }
+
+        function exportDataJSON() {
+            const data = {
+                owner: 'P.H.PHƯỚC',
+                anchors: getAnchors(),
+                overrides: getCustomOverrides()
+            };
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+            const a = document.createElement('a');
+            a.setAttribute("href", dataStr);
+            a.setAttribute("download", `lich_ca_PHPHUOC_${formatDateKey(new Date())}.json`);
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        }
+
+        function importDataJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (parsed.anchors) saveAnchors(parsed.anchors);
+                    if (parsed.overrides) saveCustomOverrides(parsed.overrides);
+
+                    alert('Khôi phục dữ liệu ứng dụng của P.H.PHƯỚC thành công!');
+                    closeBackupModal();
+                    renderCurrentView();
+                } catch (err) {
+                    alert('File không hợp lệ!');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Initialize App on Window Load
+        window.onload = function() {
+            renderCurrentView();
+        };
+    </script>
+</body>
+</html>
